@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NLP Query Processor</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>NLP Query Processor</h1>
+    <form id="query-form" action="/query" method="POST">
+        <textarea name="query" placeholder="Enter your query"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+
+</body>
+</html>
