@@ -78,6 +78,44 @@ def histogram():
 
 
 
+@app.route('/api/weather', methods=['GET'])
+def get_weather_data():
+    data_point = request.args.get('data_point')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    if not data_point or not start_date or not end_date:
+        return jsonify({"error": "Please provide the data_point, start_date, and end_date"}), 400
+
+    query = f"SELECT date, {data_point} FROM weather WHERE date BETWEEN ? AND ?"
+    results = query_db(query, [start_date, end_date])
+
+    return jsonify(results)
+
+@app.route('/api/weather', methods=['POST'])
+def add_weather_data():
+    data = request.json
+    query = '''
+        INSERT OR REPLACE INTO weather (date, weather_code, temperature_max, temperature_min, precipitation_sum, wind_speed_max, precipitation_probability_max)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    '''
+    args = [
+        data.get('date'),
+        data.get('weather_code'),
+        data.get('temperature_max'),
+        data.get('temperature_min'),
+        data.get('precipitation_sum'),
+        data.get('wind_speed_max'),
+        data.get('precipitation_probability_max')
+    ]
+    
+    conn = sqlite3.connect('weather.db')
+    c = conn.cursor()
+    c.execute(query,args)
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Data added successfully"}), 201
+
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
