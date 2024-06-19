@@ -12,5 +12,35 @@
     </form>
     <div id="result"></div>
 
+
+    <script>
+        // Handle query submission
+        document.getElementById('query-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/query', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+        };
+
+        // Handle file upload
+        document.getElementById('upload-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                document.getElementById('upload-result').innerText = 'File uploaded successfully!';
+            } else {
+                document.getElementById('upload-result').innerText = 'File upload failed.';
+            }
+        };
+    </script>
+    
 </body>
 </html>

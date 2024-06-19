@@ -116,6 +116,40 @@ def add_weather_data():
     conn.close()
     return jsonify({"message": "Data added successfully"}), 201
 
+@app.route('/api/weather', methods=['PUT'])
+def update_weather_data():
+    data = request.json
+    date = data.get('date')
+    data_point = data.get('data_point')
+    value = data.get('value')
+    
+    if not date or not data_point or not value:
+        return jsonify({"error": "Please provide date, data_point, and value"}), 400
+
+    query = f"UPDATE weather SET {data_point} = ? WHERE date = ?"
+    conn = sqlite3.connect('weather.db')
+    c = conn.cursor()
+    c.execute(query, [value, date])
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Data updated successfully"}), 200
+
+@app.route('/api/weather', methods=['DELETE'])
+def delete_weather_data():
+    date = request.json.get('date')
+    
+    if not date:
+        return jsonify({"error": "Please provide date"}), 400
+
+    query = "DELETE FROM weather WHERE date = ?"
+    conn = sqlite3.connect('weather.db')
+    c = conn.cursor()
+    c.execute(query, [date])
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Data deleted successfully"}), 200
+
+
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
