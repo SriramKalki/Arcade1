@@ -42,6 +42,41 @@ def query():
     result = process_query(user_query)
     return jsonify(result)
 
+def query_db(query, args=(), one=False):
+    conn = sqlite3.connect('weather.db')
+    c = conn.cursor()
+    c.execute(query,args)
+    rv = c.fetchall()
+    conn.close()
+    return (rv[0] if rv else None) if one else rv
+
+@app.route('/histogram', methods=['GET'])
+def histogram():
+    data_point = request.args.get('data_point')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    if not data_point or not start_date or not end_date:
+        return jsonify({"error": "Please provide data_point, start_date, and end_date"}), 400
+
+    query = f"SELECT {data_point} FROM weather WHERE date BETWEEN ? AND ?"
+    data = query_db(query, [start_date, end_date])
+    data_values = [row[0] for row in data if row[0] is not None]
+
+    plt.figure(figsize=(10, 6))
+    plt.hist(data_values, bins=10, edgecolor='black')
+    plt.title(f'Histogram of {data_point}')
+    plt.xlabel(data_point)
+    plt.ylabel('Frequency')
+    
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    plt.close()
+    
+    return send_file(img, mimetype='image/png')
+
+
 
 
 if __name__ == '__main__':
