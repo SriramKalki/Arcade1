@@ -12,6 +12,38 @@
     </form>
     <div id="result"></div>
 
+    <hr>
+
+    <h2>Create Histogram</h2>
+    <form id="histogram-form" action="/histogram" method="GET" target="_blank">
+        <input type="text" name="data_point" placeholder="Enter data point (e.g., wind_speed_max)">
+        <input type="text" name="start_date" placeholder="Enter start date (YYYY-MM-DD)">
+        <input type="text" name="end_date" placeholder="Enter end date (YYYY-MM-DD)">
+        <button type="submit">Generate Histogram</button>
+    </form>
+
+    <script>
+        // Handle query submission
+        document.getElementById('query-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/query', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+        };
+    </script>
+
+
+
+    <h2>Upload Weather Data File</h2>
+    <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button type="submit">Upload</button>
+    </form>
+    <div id="upload-result"></div>
 
     <script>
         // Handle query submission
@@ -41,6 +73,5 @@
             }
         };
     </script>
-    
 </body>
 </html>

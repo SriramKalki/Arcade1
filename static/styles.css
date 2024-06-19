@@ -32,3 +32,9 @@ button {
     border: none;
     cursor: pointer;
 }
+
+#result {
+    margin-top: 20px;
+    width: 300px;
+    word-wrap: break-word;
+}
